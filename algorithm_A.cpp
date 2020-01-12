@@ -248,7 +248,7 @@ void algorithm_A(Board board, Player player, int index[]){
             }
         }
     }
-    // end of find_best, try to find a position that enemy won't win.
+    // end of find_best, try to find a position that enemy won't win. //
     int count_random = 200;
     while(count_random>=0){
         int r = rand() % 5;
