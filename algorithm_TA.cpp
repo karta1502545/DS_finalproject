@@ -165,28 +165,28 @@ int gameTree::insertNextRound(TreeNode *Node, Player currentTurn){
     char color = currentTurn.get_color();
     int headX, headY;
     bool headFind=false;
-    Board boardState = Node->getBoardState();
+    Board board = Node->getBoardState();
     
     // Find first next round node using random
     while(1){
         headX = rand()%5;
         headY = rand()%6;
-        if(boardState.get_cell_color(headX,headY)==color || boardState.get_cell_color(headX,headY)=='w'){
+        if(board.get_cell_color(headX,headY)==color || board.get_cell_color(headX,headY)=='w'){
             numNewState++;
-            boardState.place_orb(headX,headY,&currentTurn);
-            Board newBoardState = boardState;
+            board.place_orb(headX,headY,&currentTurn);
+            Board newBoardState = board;
             TreeNode *newNode = new TreeNode(newBoardState,headX,headY);
             Node->setNextRoundNode(newNode);
             break;
         }
     }
-
+    
     for(int i=0;i<ROW;i++){
         for(int j=0;j<COL;j++){
-            if(boardState.get_cell_color(i,j)==color || boardState.get_cell_color(i,j)=='w'){
+            if(board.get_cell_color(i,j)==color || board.get_cell_color(i,j)=='w'){
                 numNewState++;
-                boardState.place_orb(i,j,&currentTurn);
-                Board newBoardState = boardState;
+                board.place_orb(i,j,&currentTurn);
+                Board newBoardState = board;
                 TreeNode *newNode = new TreeNode(newBoardState,i,j);
                 TreeNode *tail = Node->getNextRoundNode()->getTail();
                 tail->setNextNode(newNode);
@@ -304,11 +304,18 @@ void algorithm_B(Board board, Player player, int index[]){
 
 void algorithm_C(Board board, Player player, int index[]){
     // algorithm_C is noLook version bot
-    int row=rand()%5, col=rand()%6;
+    int row, col;
     char color = player.get_color();
 
     // Scan through the board to find a cell that has min (capacity-orbNum)
-    int orbLack=4;
+    int orbLack;
+    while(1){
+        row = rand() % 5;
+        col = rand() % 6;
+        if(board.get_cell_color(row, col) == color || board.get_cell_color(row, col) == 'w') break;
+    }
+    orbLack = board.get_capacity(row,col)-board.get_orbs_num(row,col);
+
     for(int i=0;i<ROW;i++){
         for(int j=0;j<COL;j++){
             if(board.get_cell_color(i,j)==color){

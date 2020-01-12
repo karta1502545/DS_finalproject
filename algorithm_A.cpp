@@ -4,26 +4,6 @@
 #include "../include/algorithm.h"
 
 using namespace std;
-
-/******************************************************
- * In enemyr algorithm, enemy can just use the the funcitons
- * listed by TA to get the board information.(functions 
- * 1. ~ 4. are listed in next block)
- * 
- * The STL library functions is not allowed to use.
-******************************************************/
-
-/*************************************************************************
- * 1. int board.get_orbs_num(int row_index, int col_index)
- * 2. int board.get_capacity(int row_index, int col_index)
- * 3. char board.get_cell_color(int row_index, int col_index)
- * 4. void board.print_current_board(int row_index, int col_index, int round)
- * 
- * 1. The function that return the number of orbs in cell(row, col)
- * 2. The function that return the orb capacity of the cell(row, col)
- * 3. The function that return the color fo the cell(row, col)
- * 4. The function that print out the current board statement
-*************************************************************************/
 #define empty 0
 #define me 1
 #define enemy 2
@@ -38,7 +18,6 @@ int board_capacity[5][6] = {0};
 
 int color(Board board, int row, int col)
 {
-    //printf("color\n");
     if(board.get_cell_color(row, col) == mycolor){
     return me;
     }
@@ -51,7 +30,6 @@ int color(Board board, int row, int col)
 }
 bool need_explosion()
 {
-    //printf("need_explosion\n");
     for(int i=0; i<5; i++){
         for(int j=0; j<6; j++){
             if(board_number[i][j]>=board_capacity[i][j])
@@ -62,8 +40,7 @@ bool need_explosion()
 }
 void reallocate_board()
 {
-    //printf("reallocate_board\n");
-    int count = 200;
+    int count = 1000;
     while(need_explosion() && count>0){
         count--;
         for(int i=0; i<5; i++){
@@ -72,7 +49,6 @@ void reallocate_board()
                     board_number[i][j] -= board_capacity[i][j];
                     int infection = board_color[i][j];
                     board_color[i][j] = empty;
-                    //printf("board_number[%d][%d] = %d\n", i, j, board_number[i][j]);
                     if(j==0){
                         board_number[i][j+1]++;
                         board_color[i][j+1] = infection;
@@ -105,55 +81,10 @@ void reallocate_board()
             }
         }
     }
-    /*
-    int a;
-    if(count == 0){
-        char symbol;
-        int orb_num;
-        cout << "=========================================" << endl;
-            for(int i = 0; i < 5; i++){
-                for(int j = 0; j < 6; j++){
-                    symbol = board_color[i][j];
-                    switch(symbol){
-                        case me:
-                            symbol = 'O';
-                            break;
-                        case enemy:
-                            symbol = 'X';
-                            break;
-                        default:
-                            break;
-                    }
-
-                    orb_num = board_number[i][j];
-                    switch(orb_num){
-                        case 0:
-                            cout << "|    | ";
-                            break;
-                        case 1:
-                            cout << "|" << symbol << "   | ";
-                            break;
-                        case 2: 
-                            cout << "|" << symbol << symbol << "  | ";
-                            break;
-                        case 3:
-                            cout << "|" << symbol << symbol << symbol << " | ";
-                            break;
-                        default:
-                            cout << "|" << symbol << symbol << symbol << symbol << "| ";
-                    }
-                }
-                cout << endl;
-            }
-            cout << "=========================================" << endl << endl;
-        //cin >> a;
-    }
-    */
 }
 
 bool check_win(int meorenemy)
 {
-    //printf("check_enemy\n");
     for(int i=0; i<5; i++){
         for(int j=0; j<6; j++){
             if(meorenemy == me){
@@ -170,8 +101,7 @@ bool check_win(int meorenemy)
 }
 
 bool place_test_win(int row, int col, int meorenemy)
-{   
-    //printf("place_test_win\n");
+{
     if(meorenemy == me){
         bool win = false;
         if(board_color[row][col] == me && board_number[row][col] == board_capacity[row][col] - 1){
@@ -197,7 +127,6 @@ bool place_test_win(int row, int col, int meorenemy)
 }
 void init_board()
 {
-    //printf("init_board\n");
     for(int i=0; i<5; i++){
         for(int j=0; j<6; j++){
             board_color[i][j] = init_board_color[i][j];
@@ -207,20 +136,11 @@ void init_board()
 }
 
 void algorithm_A(Board board, Player player, int index[]){
-    // cout << board.get_capacity(0, 0) << endl;
-    // cout << board.get_orbs_num(0, 0) << endl;
-    // cout << board.get_cell_color(0, 0) << endl;
-    // board.print_current_board(0, 0, 0);
-
-    //////////// Random Algorithm ////////////
-    // Here is the random algorithm for enemyr reference, enemy can delete or comment it.
     srand(time(NULL));
     bool find_best = false, find_best2 = false;
     int random_row, random_col;
     mycolor = player.get_color();
-    
     // try to find the best result
-
     // construct current board situation
     for(int i=0; i<5; i++){
         for(int j=0; j<6; j++){
@@ -238,9 +158,7 @@ void algorithm_A(Board board, Player player, int index[]){
     for(int i=0; i<5; i++){
         for(int j=0; j<6; j++){
             init_board();
-            //printf("i=%d, j= %d\n ", i, j);
             find_best = place_test_win(i, j, me);
-            //printf("i=%d, j= %d\n ", i, j);
             if(find_best){
                 index[0] = i;
                 index[1] = j;
@@ -249,7 +167,7 @@ void algorithm_A(Board board, Player player, int index[]){
         }
     }
     // end of find_best, try to find a position that enemy won't win.
-    int count_random = 200;
+    int count_random = 1000;
     while(count_random>=0){
         init_board();
         int r = rand() % 5;
@@ -257,7 +175,9 @@ void algorithm_A(Board board, Player player, int index[]){
         if(board_color[r][c] != enemy){
             for(int i=0; i<5; i++){
                 for(int j=0; j<6; j++){
+                    init_board();
                     board_number[r][c]++;
+                    reallocate_board();
                     find_best2 = place_test_win(i, j, enemy);
                     if(!find_best2){
                         index[0] = r;
@@ -275,7 +195,6 @@ void algorithm_A(Board board, Player player, int index[]){
         random_col = rand() % 6;
         if(board.get_cell_color(random_row, random_col) == mycolor || board.get_cell_color(random_row, random_col) == 'w') break;
     }
-    
     index[0] = random_row;
     index[1] = random_col;
 }
