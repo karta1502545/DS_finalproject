@@ -249,23 +249,25 @@ void algorithm_A(Board board, Player player, int index[]){
         }
     }
     // end of find_best, try to find a position that enemy won't win.
-    for(int i=0; i<5; i++){
-        for(int j=0; j<6; j++){
-            if(board_color[i][j] != enemy){
-                board_number[i][j]++;
-                for(int k=0; k<5; k++){
-                    for(int l=0; l<6; l++){
-                        init_board();
-                        find_best2 = place_test_win(i, j, enemy);
-                        if(!find_best2){
-                            index[0] = i;
-                            index[1] = j;
-                            return;
-                        }
+    int count_random = 200;
+    while(count_random>=0){
+        int r = rand() % 5;
+        int c = rand() % 6;
+        if(board_color[r][c] != enemy){
+            board_number[r][c]++;
+            for(int k=0; k<5; k++){
+                for(int l=0; l<6; l++){
+                    init_board();
+                    find_best2 = place_test_win(i, j, enemy);
+                    if(!find_best2){
+                        index[0] = i;
+                        index[1] = j;
+                        return;
                     }
                 }
             }
         }
+        count_random--;
     }
     // end of find_won't win, use random.
     while(1){
