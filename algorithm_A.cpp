@@ -38,7 +38,7 @@ int board_capacity[5][6] = {0};
 
 int color(Board board, int row, int col)
 {
-    printf("color\n");
+    //printf("color\n");
     if(board.get_cell_color(row, col) == mycolor){
     return me;
     }
@@ -51,7 +51,7 @@ int color(Board board, int row, int col)
 }
 bool need_explosion()
 {
-    printf("need_explosion\n");
+    //printf("need_explosion\n");
     for(int i=0; i<5; i++){
         for(int j=0; j<6; j++){
             if(board_number[i][j]>=board_capacity[i][j])
@@ -62,47 +62,50 @@ bool need_explosion()
 }
 void reallocate_board()
 {
-    printf("reallocate_board\n");
+    //printf("reallocate_board\n");
     int count = 200;
     while(need_explosion() && count>0){
         count--;
         for(int i=0; i<5; i++){
             for(int j=0; j<6; j++){
-                if(board_color[i][j] == me && board_number[i][j] >= board_capacity[i][j]){
+                if(board_number[i][j] >= board_capacity[i][j]){
                     board_number[i][j] -= board_capacity[i][j];
-                    printf("board_number[%d][%d] = %d\n", i, j, board_number[i][j]);
+                    int infection = board_color[i][j];
+                    board_color[i][j] = empty;
+                    //printf("board_number[%d][%d] = %d\n", i, j, board_number[i][j]);
                     if(j==0){
                         board_number[i][j+1]++;
-                        board_color[i][j+1] = me;
+                        board_color[i][j+1] = infection;
                     }
                     else if(j==5){
                         board_number[i][j-1]++;
-                        board_color[i][j-1] = me;
+                        board_color[i][j-1] = infection;
                     }
                     else{
                         board_number[i][j+1]++;
-                        board_color[i][j+1] = me;
+                        board_color[i][j+1] = infection;
                         board_number[i][j-1]++;
-                        board_color[i][j-1] = me;
+                        board_color[i][j-1] = infection;
                     }
                     if(i==0){
                         board_number[i+1][j]++;
-                        board_color[i+1][j] = me; 
+                        board_color[i+1][j] = infection; 
                     }
                     else if(i==4){
                         board_number[i-1][j]++;
-                        board_color[i-1][j] = me;
+                        board_color[i-1][j] = infection;
                     }
                     else{
                         board_number[i+1][j]++;
-                        board_color[i+1][j] = me;
+                        board_color[i+1][j] = infection;
                         board_number[i-1][j]++;
-                        board_color[i-1][j] = me;
+                        board_color[i-1][j] = infection;
                     }
                 }
             }
         }
     }
+    /*
     int a;
     if(count == 0){
         char symbol;
@@ -143,39 +146,58 @@ void reallocate_board()
                 cout << endl;
             }
             cout << "=========================================" << endl << endl;
-        cin >> a;
+        //cin >> a;
     }
+    */
 }
 
-bool check_win()
+bool check_win(int meorenemy)
 {
-    printf("check_enemy\n");
+    //printf("check_enemy\n");
     for(int i=0; i<5; i++){
         for(int j=0; j<6; j++){
-            if(board_color[i][j] == enemy)
-                return false;
+            if(meorenemy == me){
+                if(board_color[i][j] == enemy && board_number[i][j]>0)
+                    return false;
+            }
+            else{
+                if(board_color[i][j] == me && board_number[i][j]>0)
+                    return false;
+            }
         }
     }
     return true;
 }
 
-bool place_test_win(int row, int col)
+bool place_test_win(int row, int col, int meorenemy)
 {   
-    printf("place_test_win\n");
-    bool win = false;
-    if(board_color[row][col] == me && board_number[row][col] == board_capacity[row][col] - 1){
-        board_number[row][col]++;
-        reallocate_board();
-        win = check_win();
+    //printf("place_test_win\n");
+    if(meorenemy == me){
+        bool win = false;
+        if(board_color[row][col] == me && board_number[row][col] == board_capacity[row][col] - 1){
+            board_number[row][col]++;
+            reallocate_board();
+            win = check_win(meorenemy);
+        }
+        else{
+            return false;
+        }
+        return win;
     }
     else{
-        return false;
+        if(board_color[row][col] == enemy && board_number[row][col] == board_capacity[row][col] - 1){
+            board_number[row][col]++;
+            reallocate_board();
+            return check_win(meorenemy);
+        }
+        else{
+            return true; // enemy will win, so find the next position. 
+        }
     }
-    return win;
 }
 void init_board()
 {
-    printf("init_board\n");
+    //printf("init_board\n");
     for(int i=0; i<5; i++){
         for(int j=0; j<6; j++){
             board_color[i][j] = init_board_color[i][j];
@@ -193,7 +215,7 @@ void algorithm_A(Board board, Player player, int index[]){
     //////////// Random Algorithm ////////////
     // Here is the random algorithm for enemyr reference, enemy can delete or comment it.
     srand(time(NULL));
-    bool find_best = false;
+    bool find_best = false, find_best2 = false;
     int random_row, random_col;
     mycolor = player.get_color();
     
@@ -216,9 +238,9 @@ void algorithm_A(Board board, Player player, int index[]){
     for(int i=0; i<5; i++){
         for(int j=0; j<6; j++){
             init_board();
-            printf("i=%d, j= %d\n ", i, j);
-            find_best = place_test_win(i, j);
-            printf("i=%d, j= %d\n ", i, j);
+            //printf("i=%d, j= %d\n ", i, j);
+            find_best = place_test_win(i, j, me);
+            //printf("i=%d, j= %d\n ", i, j);
             if(find_best){
                 index[0] = i;
                 index[1] = j;
@@ -226,13 +248,32 @@ void algorithm_A(Board board, Player player, int index[]){
             }
         }
     }
-    // end of find_best, use random.
+    // end of find_best, try to find a position that enemy won't win.
+    for(int i=0; i<5; i++){
+        for(int j=0; j<6; j++){
+            if(board_color[i][j] != enemy){
+                board_number[i][j]++;
+                for(int k=0; k<5; k++){
+                    for(int l=0; l<6; l++){
+                        init_board();
+                        find_best2 = place_test_win(i, j, enemy);
+                        if(!find_best2){
+                            index[0] = i;
+                            index[1] = j;
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    // end of find_won't win, use random.
     while(1){
         random_row = rand() % 5;
         random_col = rand() % 6;
         if(board.get_cell_color(random_row, random_col) == mycolor || board.get_cell_color(random_row, random_col) == 'w') break;
     }
-
+    
     index[0] = random_row;
     index[1] = random_col;
 }
