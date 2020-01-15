@@ -1,6 +1,8 @@
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
+#include <sys/types.h>
+#include <process.h>
 #include "../include/algorithm.h"
 
 using namespace std;
@@ -11,6 +13,7 @@ using namespace std;
 int mycolor;
 int init_board_color[5][6] = {0};
 int init_board_number[5][6] = {0};
+int random_iti = 0;
 
 int board_color[5][6] = {0};
 int board_number[5][6] = {0};
@@ -104,7 +107,7 @@ bool place_test_win(int row, int col, int meorenemy)
 {
     if(meorenemy == me){
         bool win = false;
-        if(board_color[row][col] == me && board_number[row][col] == board_capacity[row][col] - 1){
+        if(board_color[row][col] == me && (board_number[row][col] == (board_capacity[row][col] - 1))){
             board_number[row][col]++;
             reallocate_board();
             win = check_win(meorenemy);
@@ -136,7 +139,8 @@ void init_board()
 }
 
 void algorithm_A(Board board, Player player, int index[]){
-    srand(time(NULL));
+    srand(time(NULL)+getpid());
+    
     bool find_best = false, find_best2 = false;
     int random_row, random_col;
     mycolor = player.get_color();
@@ -162,6 +166,7 @@ void algorithm_A(Board board, Player player, int index[]){
             if(find_best){
                 index[0] = i;
                 index[1] = j;
+                //cout << "win1" << endl;
                 return;
             }
         }
@@ -169,9 +174,11 @@ void algorithm_A(Board board, Player player, int index[]){
     // end of find_best, try to find a position that enemy won't win.
     int count_random = 1000;
     while(count_random>=0){
+        random_iti++;
         init_board();
-        int r = rand() % 5;
-        int c = rand() % 6;
+        int r = abs((rand() +20423*random_iti)) % 5;
+        int c = abs((rand() +24149*random_iti)) % 6;
+        //printf("r = %d, c = %d\n", r, c);
         if(board_color[r][c] != enemy){
             for(int i=0; i<5; i++){
                 for(int j=0; j<6; j++){
@@ -182,6 +189,7 @@ void algorithm_A(Board board, Player player, int index[]){
                     if(!find_best2){
                         index[0] = r;
                         index[1] = c;
+                        //cout << "win2" << endl;
                         return;
                     }
                 }
@@ -191,9 +199,11 @@ void algorithm_A(Board board, Player player, int index[]){
     }
     // end of find_won't win, use random.
     while(1){
-        random_row = rand() % 5;
-        random_col = rand() % 6;
+        random_iti++;
+        random_row = abs((rand() +4123*random_iti)) % 5;
+        random_col = abs((rand() +4235*random_iti)) % 6;
         if(board.get_cell_color(random_row, random_col) == mycolor || board.get_cell_color(random_row, random_col) == 'w') break;
+        //cout << "win3" << endl;
     }
     index[0] = random_row;
     index[1] = random_col;

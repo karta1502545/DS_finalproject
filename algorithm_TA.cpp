@@ -209,7 +209,7 @@ float gameTree::BoardEvaluator(TreeNode *Node, int difficulty){
     if(difficulty == EASY_BOARD_EVALUATOR){
         for(int i=0;i<ROW;i++){
             for(int j=0;i<COL;j++){
-                // åªè€ƒæ…®åº§æ¨™(i,j)çš„orbæ•¸é‡
+                // ?ª?????®åº§æ¨?(i,j)???orb?•¸???
                 if(board.get_cell_color(i,j)==colorPlayer){
                     orbPlayer+=board.get_orbs_num(i,j);
                 }else if(board.get_cell_color(i,j)==colorOpponent){
@@ -221,7 +221,7 @@ float gameTree::BoardEvaluator(TreeNode *Node, int difficulty){
     }else if(difficulty == HARD_BOARD_EVALUATOR){
         for(int i=0;i<ROW;i++){
             for(int j=0;j<COL;j++){
-                // è€ƒæ…®åº§æ¨™(i,j)çš„orbæ•¸é‡ä»¥åŠå››å€‹æ–¹å‘çš„å°æ‰‹orbæ•¸é‡
+                // ?????®åº§æ¨?(i,j)???orb?•¸??ä»¥??Šå?›å?‹æ–¹??‘ç??å°æ?‹orb?•¸???
                 if(board.get_cell_color(i,j)==colorPlayer){
                     orbPlayer+=board.get_orbs_num(i,j);
                 }else if(board.get_cell_color(i,j)==colorOpponent){
@@ -229,7 +229,7 @@ float gameTree::BoardEvaluator(TreeNode *Node, int difficulty){
                 }
             }
         }
-        // è¨ˆç®—å››å€‹æ–¹å‘çš„opponent orbæ•¸é‡(è¶Šå¤šä»£è¡¨é€™å€‹cellè¶Šå€¼å¾—å¼•çˆ†)
+        // è¨?ç®—å?›å?‹æ–¹??‘ç??opponent orb?•¸???(è¶Šå?šä»£è¡¨é?™å?‹cellè¶Šå?¼å?—å?•ç??)
         if(board.get_cell_color(orbX,orbY)==colorPlayer){
             if(index_range_illegal(orbX+EAST,orbY)==true){
                 if(board.get_cell_color(orbX+EAST,orbY)==colorOpponent){
@@ -319,9 +319,11 @@ void algorithm_C(Board board, Player player, int index[]){
     for(int i=0;i<ROW;i++){
         for(int j=0;j<COL;j++){
             if(board.get_cell_color(i,j)==color){
-                if( (board.get_capacity(i,j)-board.get_orbs_num(i,j))<=orbLack )
+                if( (board.get_capacity(i,j)-board.get_orbs_num(i,j))<=orbLack ){
                     row=i;
                     col=j;
+                    orbLack = board.get_capacity(i,j)-board.get_orbs_num(i,j);
+                }    
             }
         }
     }
